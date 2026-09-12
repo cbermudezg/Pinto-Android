@@ -154,14 +154,30 @@ fun SpaceBackground(
             val width = size.width
             val height = size.height
 
-            // 1. Draw Space Gradient (Deep Cosmic Dark Blue/Purple background)
+            // 1. Draw Space Gradient with smooth color shift animation
+            val colorShift = sin(timeProgress * 2 * Math.PI.toFloat()) * 0.5f + 0.5f
+            val topColor = Color(
+                red = 0.03f + 0.02f * colorShift,
+                green = 0.04f + 0.02f * (1f - colorShift),
+                blue = 0.10f + 0.05f * colorShift
+            )
+            val middleColor = Color(
+                red = 0.08f + 0.04f * (1f - colorShift),
+                green = 0.08f + 0.03f * colorShift,
+                blue = 0.22f + 0.06f * colorShift
+            )
+            val bottomColor = Color(
+                red = 0.03f + 0.01f * colorShift,
+                green = 0.03f + 0.02f * colorShift,
+                blue = 0.08f + 0.02f * (1f - colorShift)
+            )
+
             drawRect(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF070B19), // Deep galaxy navy
-                        Color(0xFF0F172A), // Cosmic midnight blue
-                        Color(0xFF1E1B4B), // Deep nebula indigo
-                        Color(0xFF090D16)  // Bottom space black
+                        topColor,
+                        middleColor,
+                        bottomColor
                     )
                 )
             )

@@ -40,17 +40,33 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sloth.partyquest.components.GameScreen
+import com.sloth.partyquest.components.LaunchScreen
+import com.sloth.partyquest.components.LoginScreen
 import com.sloth.partyquest.ui.theme.AppTheme
+import com.sloth.partyquest.viewmodel.AuthViewModel
+
+enum class Screen {
+    LAUNCH,
+    LOGIN,
+    GAME
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,12 +75,7 @@ class MainActivity : ComponentActivity() {
         showImmersiveMode()
         setContent {
             AppTheme {
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) { innerPadding ->
-                    GameScreen(modifier = Modifier.padding(innerPadding))
-                }
+                MainAppContent()
             }
         }
     }
@@ -89,14 +100,47 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun PintoAppPreview() {
         AppTheme {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) { innerPadding ->
-                GameScreen(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                )
+            MainAppContent()
+        }
+    }
+}
+
+@Composable
+fun MainAppContent(authViewModel: AuthViewModel = viewModel()) {
+    val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
+    var currentScreen by remember { mutableStateOf(Screen.LAUNCH) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+        Crossfade(
+            targetState = currentScreen,
+            modifier = Modifier.padding(innerPadding),
+            label = "ScreenTransition"
+        ) { screen ->
+            when (screen) {
+                Screen.LAUNCH -> {
+                    LaunchScreen(
+                        userProfile = authUiState.userProfile,
+                        onStartGame = { currentScreen = Screen.GAME },
+                        onNavigateToLogin = { currentScreen = Screen.LOGIN },
+                        onSignOut = { authViewModel.signOut() }
+                    )
+                }
+                Screen.LOGIN -> {
+                    LoginScreen(
+                        authViewModel = authViewModel,
+                        uiState = authUiState,
+                        onLoginSuccess = { currentScreen = Screen.GAME },
+                        onBackToLaunch = { currentScreen = Screen.LAUNCH }
+                    )
+                }
+                Screen.GAME -> {
+                    GameScreen(
+                        userProfile = authUiState.userProfile,
+                        onExitGame = { currentScreen = Screen.LAUNCH }
+                    )
+                }
             }
         }
     }

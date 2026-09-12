@@ -60,10 +60,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.sloth.partyquest.viewmodel.UserProfile
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,7 +86,12 @@ import com.sloth.partyquest.states.GameUiState
 import com.sloth.partyquest.viewmodel.GameViewModel
 
 @Composable
-fun GameScreen(gameViewModel: GameViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun GameScreen(
+    gameViewModel: GameViewModel = viewModel(),
+    userProfile: UserProfile? = null,
+    onExitGame: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     val gameUiState by gameViewModel.uiState.collectAsStateWithLifecycle()
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -98,6 +108,8 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel(), modifier: Modifier = 
                 MultiplayerLandscapeLayout(
                     uiState = gameUiState,
                     viewModel = gameViewModel,
+                    userProfile = userProfile,
+                    onExitGame = onExitGame,
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -109,6 +121,8 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel(), modifier: Modifier = 
 fun MultiplayerLandscapeLayout(
     uiState: GameUiState,
     viewModel: GameViewModel,
+    userProfile: UserProfile? = null,
+    onExitGame: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val players = uiState.players
@@ -130,22 +144,47 @@ fun MultiplayerLandscapeLayout(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Top Opponents Row
+        // Top Row with Back/Exit button and Opponents Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 40.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            topOpponent1?.let { player ->
-                val isTurn = players.indexOf(player) == activePlayerIdx
-                OpponentBadge(player = player, isTurn = isTurn, viewModel = viewModel)
+            IconButton(
+                onClick = onExitGame,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Exit to Menu",
+                    tint = Color.White
+                )
             }
-            topOpponent2?.let { player ->
-                val isTurn = players.indexOf(player) == activePlayerIdx
-                OpponentBadge(player = player, isTurn = isTurn, viewModel = viewModel)
+
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                topOpponent1?.let { player ->
+                    val isTurn = players.indexOf(player) == activePlayerIdx
+                    OpponentBadge(player = player, isTurn = isTurn, viewModel = viewModel)
+                }
+                topOpponent2?.let { player ->
+                    val isTurn = players.indexOf(player) == activePlayerIdx
+                    OpponentBadge(player = player, isTurn = isTurn, viewModel = viewModel)
+                }
             }
+
+            Text(
+                text = userProfile?.displayName ?: "Explorer",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                fontWeight = FontWeight.Bold,
+                fontSize = 11.sp
+            )
         }
 
         // Center Area (Left Opponent, Center Pile/Deck, Right Opponent)
