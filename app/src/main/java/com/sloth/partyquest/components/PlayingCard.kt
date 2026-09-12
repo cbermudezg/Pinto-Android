@@ -85,12 +85,14 @@ fun FaceUpCard(
     card: PlayingCard,
     isEnabled: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
+    val scale = if (isEnabled) 1.05f else 0.95f
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(63.dp)
+            .scale(scale)
             .clickable(
                 enabled = isEnabled,
                 onClick = onClick
