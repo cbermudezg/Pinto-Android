@@ -287,14 +287,16 @@ fun CardsInHand(
 @Composable
 fun CardsInBoard(player: Player, viewModel: GameViewModel) {
     Box {
-        Row {
-            player.faceDownCards.forEach {
-                FaceDownCard(card = it, isEnabled = player.onHandCards.isEmpty()) {
-                    viewModel.handleMove(player, it)
+        if (player.faceUpCards.isEmpty()) {
+            Row {
+                player.faceDownCards.forEach {
+                    FaceDownCard(card = it, isEnabled = player.onHandCards.isEmpty()) {
+                        viewModel.handleMove(player, it)
+                    }
                 }
             }
         }
-        Row(modifier = Modifier.padding(8.dp)) {
+        Row {
             player.faceUpCards.forEach {
                 FaceUpCard(
                     card = it,
@@ -303,7 +305,6 @@ fun CardsInBoard(player: Player, viewModel: GameViewModel) {
                     onClick = {
                         viewModel.handleMove(player, it)
                     })
-                Spacer(Modifier.size(1.dp))
             }
         }
     }
