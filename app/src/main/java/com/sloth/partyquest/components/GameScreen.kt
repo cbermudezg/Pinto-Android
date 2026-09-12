@@ -159,7 +159,6 @@ fun MultiplayerLandscapeLayout(
         ) {
             // Left Opponent Spot
             Box(
-                modifier = Modifier.width(130.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 leftOpponent?.let { player ->
@@ -178,7 +177,6 @@ fun MultiplayerLandscapeLayout(
 
             // Right Opponent Spot
             Box(
-                modifier = Modifier.width(130.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 rightOpponent?.let { player ->
