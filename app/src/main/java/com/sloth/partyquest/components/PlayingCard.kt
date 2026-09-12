@@ -41,13 +41,21 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -85,12 +93,14 @@ fun FaceUpCard(
     card: PlayingCard,
     isEnabled: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
+    val scale = if (isEnabled) 1.05f else 0.95f
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(63.dp)
+            .scale(scale)
             .clickable(
                 enabled = isEnabled,
                 onClick = onClick
@@ -256,30 +266,84 @@ fun CenterView(
 fun CardsInHand(
     player: Player, viewModel: GameViewModel
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(7),
-        horizontalArrangement = Arrangement.spacedBy(1.dp),
-        verticalArrangement = Arrangement.spacedBy(1.dp)
+    val scrollState = androidx.compose.foundation.rememberScrollState()
+    val handCards = player.onHandCards.toList()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 2.dp),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        items(player.onHandCards, key = { it.id }) {
+        // Scroll to newest card when a new card is added to hand
+        androidx.compose.runtime.LaunchedEffect(handCards.size) {
+            if (handCards.isNotEmpty()) {
+                scrollState.animateScrollTo(scrollState.maxValue)
+            }
+        }
 
-            FaceUpCard(
-                card = it,
-                isEnabled = viewModel.checkTurn(player),
-                onClick = {
-                    viewModel.handleMove(player, it)
-                },
-                modifier = Modifier.animateItem(
-                    fadeInSpec = tween(durationMillis = 1000), fadeOutSpec = spring(
-                        stiffness = Spring.StiffnessHigh,
-                        dampingRatio = Spring.DampingRatioHighBouncy
-                    ), placementSpec = spring(
-                        stiffness = Spring.StiffnessLow,
-                        dampingRatio = Spring.DampingRatioMediumBouncy
+        // Horizontal scroll container with circular arc-rotated card layout
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 50.dp)
+                .horizontalScroll(scrollState),
+            horizontalArrangement = Arrangement.spacedBy((-18).dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            handCards.forEachIndexed { index, card ->
+                val total = handCards.size
+                val centerOffset = index - (total - 1) / 2f
+                val rotationAngle = centerOffset * 6f
+                val offsetY = (kotlin.math.abs(centerOffset) * 4).dp
+
+                Box(
+                    modifier = Modifier
+                        .padding(top = offsetY)
+                        .graphicsLayer {
+                            rotationZ = rotationAngle
+                        }
+                ) {
+                    FaceUpCard(
+                        card = card,
+                        isEnabled = viewModel.checkTurn(player),
+                        onClick = {
+                            viewModel.handleMove(player, card)
+                        }
                     )
-                ),
-            )
+                }
+            }
+        }
 
+        // Rounded scroll control on the bottom right side of screen
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 4.dp, bottom = 4.dp)
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        if (scrollState.value >= scrollState.maxValue) {
+                            scrollState.animateScrollTo(0)
+                        } else {
+                            scrollState.animateScrollTo(scrollState.value + 120)
+                        }
+                    }
+                }
+            ) {
+                Text(
+                    text = "➔",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }

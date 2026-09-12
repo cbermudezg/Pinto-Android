@@ -43,7 +43,10 @@ import com.sloth.partyquest.models.PlayingCard
 data class GameUiState(
     val players: List<Player> = listOf(
         Player(1),
-        Player(2)
+        Player(2),
+        Player(3),
+        Player(4),
+        Player(5)
     ),
     val isGameOver: Boolean = false,
     val currentPlayingCard: PlayingCard = cardPlaceHolder,
