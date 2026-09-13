@@ -211,7 +211,7 @@ fun MultiplayerLandscapeLayout(
                     .padding(horizontal = 8.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                CardsInHand(player = localPlayer, viewModel = viewModel)
+                CardsInHand(player = viewModel.getCurrentPlayer(), viewModel = viewModel)
             }
 
             // User Action Buttons (Eat / Draw)

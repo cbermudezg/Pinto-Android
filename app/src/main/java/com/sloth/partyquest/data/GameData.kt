@@ -39,246 +39,86 @@ package com.sloth.partyquest.data
 import com.sloth.partyquest.models.EffectType
 import com.sloth.partyquest.models.PlayingCard
 
-const val reverseIcon = "🌀"
-const val cleanIcon = "🌬️"
-const val knotIcon = "🪢"
-const val onlyGreaterIcon = "🎰"
-const val firstSet = "🪆"
-const val secondSet = "🍀"
-const val thirdSet = "🍄"
-const val fourthSet = "🧿"
-
 // Set with all the words for the Game
-val allPlayingCard: Set<PlayingCard> =
-    setOf(
+val allPlayingCard: MutableSet<PlayingCard> =
+    mutableSetOf(
         PlayingCard(
-            reverseIcon,
             0,
             effectType = EffectType.REVERSE,
         ),
         PlayingCard(
-            reverseIcon,
             0,
             effectType = EffectType.REVERSE,
         ),
         PlayingCard(
-            reverseIcon,
             0,
             effectType = EffectType.REVERSE,
         ),
         PlayingCard(
-            reverseIcon,
             0,
             effectType = EffectType.REVERSE,
         ),
         PlayingCard(
-            cleanIcon,
             0,
             effectType = EffectType.CLEAR,
         ),
         PlayingCard(
-            cleanIcon,
             0,
             effectType = EffectType.CLEAR,
         ),
         PlayingCard(
-            cleanIcon,
             0,
             effectType = EffectType.CLEAR,
         ),
         PlayingCard(
-            cleanIcon,
             0,
             effectType = EffectType.CLEAR,
         ),
         PlayingCard(
-            knotIcon,
             0,
             effectType = EffectType.ONLY_LESS,
         ),
         PlayingCard(
-            knotIcon,
             0,
             effectType = EffectType.ONLY_LESS,
         ),
         PlayingCard(
-            knotIcon,
             0,
             effectType = EffectType.ONLY_LESS,
         ),
         PlayingCard(
-            knotIcon,
             0,
             effectType = EffectType.ONLY_LESS,
         ),
         PlayingCard(
-            onlyGreaterIcon,
             0,
             effectType = EffectType.ONLY_GREATERS,
         ),
         PlayingCard(
-            onlyGreaterIcon,
             0,
             effectType = EffectType.ONLY_GREATERS,
         ),
         PlayingCard(
-            onlyGreaterIcon,
             0,
             effectType = EffectType.ONLY_GREATERS,
         ),
         PlayingCard(
-            onlyGreaterIcon,
             0,
             effectType = EffectType.ONLY_GREATERS
         ),
-        PlayingCard(
-            firstSet,
-            3,
-        ),
-        PlayingCard(
-            firstSet,
-            4,
-        ),
-        PlayingCard(
-            firstSet,
-            5,
-        ),
-        PlayingCard(
-            firstSet,
-            6,
-        ),
-        PlayingCard(
-            firstSet,
-            9,
-        ),
-        PlayingCard(
-            firstSet,
-            11,
-        ),
-        PlayingCard(
-            firstSet,
-            12,
-        ),
-        PlayingCard(
-            firstSet,
-            13,
-        ),
-        PlayingCard(
-            firstSet,
-            14,
-        ),
-        PlayingCard(
-            secondSet,
-            3,
-        ),
-        PlayingCard(
-            secondSet,
-            4,
-        ),
-        PlayingCard(
-            secondSet,
-            5,
-        ),
-        PlayingCard(
-            secondSet,
-            6,
-        ),
-        PlayingCard(
-            secondSet,
-            9,
-        ),
-        PlayingCard(
-            secondSet,
-            11,
-        ),
-        PlayingCard(
-            secondSet,
-            12,
-        ),
-        PlayingCard(
-            secondSet,
-            13,
-        ),
-        PlayingCard(
-            secondSet,
-            14,
-        ),
-        PlayingCard(
-            thirdSet,
-            3,
-        ),
-        PlayingCard(
-            thirdSet,
-            4,
-        ),
-        PlayingCard(
-            thirdSet,
-            5,
-        ),
-        PlayingCard(
-            thirdSet,
-            6,
-        ),
-        PlayingCard(
-            thirdSet,
-            9,
-        ),
-        PlayingCard(
-            thirdSet,
-            11,
-        ),
-        PlayingCard(
-            thirdSet,
-            12,
-        ),
-        PlayingCard(
-            thirdSet,
-            13,
-        ),
-        PlayingCard(
-            thirdSet,
-            14,
-        ),
-        PlayingCard(
-            fourthSet,
-            3,
-        ),
-        PlayingCard(
-            fourthSet,
-            4,
-        ),
-        PlayingCard(
-            fourthSet,
-            5,
-        ),
-        PlayingCard(
-            fourthSet,
-            6,
-        ),
-        PlayingCard(
-            fourthSet,
-            9,
-        ),
-        PlayingCard(
-            fourthSet,
-            11,
-        ),
-        PlayingCard(
-            fourthSet,
-            12,
-        ),
-        PlayingCard(
-            fourthSet,
-            13,
-        ),
-        PlayingCard(
-            fourthSet,
-            14,
-        )
     )
 
 val cardPlaceHolder = PlayingCard(
-    "",
     0,
     isOnHand = true
 )
+
+fun loadSet() : MutableSet<PlayingCard>{
+    for (i in 2..<14) {
+        allPlayingCard.add(PlayingCard(i))
+        allPlayingCard.add(PlayingCard(i))
+        allPlayingCard.add(PlayingCard(i))
+        allPlayingCard.add(PlayingCard(i))
+    }
+    return allPlayingCard
+}

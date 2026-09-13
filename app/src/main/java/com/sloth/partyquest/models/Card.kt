@@ -39,7 +39,6 @@ package com.sloth.partyquest.models
 import java.util.UUID
 
 data class PlayingCard(
-    val content: String,
     val value: Int,
     var isFaceUp: Boolean = false,
     var isOnHand: Boolean = false,

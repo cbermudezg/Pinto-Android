@@ -38,8 +38,8 @@ package com.sloth.partyquest.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.sloth.partyquest.data.allPlayingCard
 import com.sloth.partyquest.data.cardPlaceHolder
+import com.sloth.partyquest.data.loadSet
 import com.sloth.partyquest.models.EffectType
 import com.sloth.partyquest.models.Player
 import com.sloth.partyquest.models.PlayingCard
@@ -63,7 +63,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun dealCards() {
-        cardsOnPlay.addAll(allPlayingCard.shuffled())
+        cardsOnPlay.addAll(loadSet())
         uiState.value.players.forEach { player ->
             pickRandomSetOfCards(player)
         }
@@ -134,7 +134,7 @@ class GameViewModel : ViewModel() {
                 }
             }
         }
-        Log.i("checkMove", "${clickedCard.content}, ${clickedCard.value}")
+        Log.i("checkMove", " ${clickedCard.value}")
     }
 
     private fun updateLists(player: Player, clickedCard: PlayingCard) {
@@ -152,7 +152,7 @@ class GameViewModel : ViewModel() {
         currentPlayer.onHandCards.sortBy { it.value }
         cardsPlayed.clear()
         _uiState.update { currentState ->
-            currentState.copy(currentPlayingCard = PlayingCard("", 0))
+            currentState.copy(currentPlayingCard = PlayingCard( 0))
         }
     }
 
