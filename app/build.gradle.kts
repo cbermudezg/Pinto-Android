@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,5 +77,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Import the BoM for the Firebase platform
-    implementation(platform(libs.firebase.bom.v33160))
+    implementation(platform(libs.firebase.bom))
 }

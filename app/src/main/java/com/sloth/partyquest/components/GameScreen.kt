@@ -81,7 +81,11 @@ import com.sloth.partyquest.states.GameUiState
 import com.sloth.partyquest.viewmodel.GameViewModel
 
 @Composable
-fun GameScreen(gameViewModel: GameViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun GameScreen(
+    gameViewModel: GameViewModel = viewModel(),
+    onBackToMenu: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
+) {
     val gameUiState by gameViewModel.uiState.collectAsStateWithLifecycle()
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -100,6 +104,26 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel(), modifier: Modifier = 
                     viewModel = gameViewModel,
                     modifier = Modifier.fillMaxSize()
                 )
+
+                onBackToMenu?.let { backClick ->
+                    Surface(
+                        onClick = backClick,
+                        shape = RoundedCornerShape(10.dp),
+                        color = Color(0xCC0F172A),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF38BDF8)),
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = "⬅️ Menu",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                        )
+                    }
+                }
             }
         }
     }
