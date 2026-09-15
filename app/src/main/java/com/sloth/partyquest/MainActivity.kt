@@ -44,13 +44,32 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sloth.partyquest.components.GameScreen
+import com.sloth.partyquest.components.LoginScreen
+import com.sloth.partyquest.components.MenuScreen
+import com.sloth.partyquest.components.ProfileScreen
 import com.sloth.partyquest.ui.theme.AppTheme
+import com.sloth.partyquest.viewmodel.AuthViewModel
+import com.sloth.partyquest.viewmodel.GameViewModel
+
+enum class AppScreen {
+    LOGIN,
+    MENU,
+    PROFILE,
+    GAME
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,10 +79,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
-                    GameScreen(modifier = Modifier.padding(innerPadding))
+                    MainApp(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -90,14 +108,61 @@ class MainActivity : ComponentActivity() {
     fun PintoAppPreview() {
         AppTheme {
             Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) { innerPadding ->
-                GameScreen(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                )
+                GameScreen(modifier = Modifier.padding(innerPadding))
             }
+        }
+    }
+}
+
+@Composable
+fun MainApp(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = viewModel(),
+    gameViewModel: GameViewModel = viewModel()
+) {
+    val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
+    var currentScreen by remember { mutableStateOf(AppScreen.LOGIN) }
+
+    LaunchedEffect(authUiState.isAuthenticated) {
+        if (authUiState.isAuthenticated && currentScreen == AppScreen.LOGIN) {
+            currentScreen = AppScreen.MENU
+        } else if (!authUiState.isAuthenticated) {
+            currentScreen = AppScreen.LOGIN
+        }
+    }
+
+    when (currentScreen) {
+        AppScreen.LOGIN -> {
+            LoginScreen(
+                authViewModel = authViewModel,
+                onLoginSuccess = { currentScreen = AppScreen.MENU },
+                modifier = modifier
+            )
+        }
+        AppScreen.MENU -> {
+            MenuScreen(
+                authViewModel = authViewModel,
+                onLaunchGame = { currentScreen = AppScreen.GAME },
+                onOpenProfile = { currentScreen = AppScreen.PROFILE },
+                onSignOut = { currentScreen = AppScreen.LOGIN },
+                modifier = modifier
+            )
+        }
+        AppScreen.PROFILE -> {
+            ProfileScreen(
+                authViewModel = authViewModel,
+                onBackToMenu = { currentScreen = AppScreen.MENU },
+                modifier = modifier
+            )
+        }
+        AppScreen.GAME -> {
+            GameScreen(
+                gameViewModel = gameViewModel,
+                onBackToMenu = { currentScreen = AppScreen.MENU },
+                modifier = modifier
+            )
         }
     }
 }
